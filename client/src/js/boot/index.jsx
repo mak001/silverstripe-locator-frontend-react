@@ -47,13 +47,23 @@ const finalCreateStore = compose(
     promiseTypeSuffixes: ['LOADING', 'SUCCESS', 'ERROR'],
   })),
   (typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined') ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f,
-)(createStore)
-const store = finalCreateStore(reducers);
+)(createStore);
 
 // defers rendering until after content is loaded
-document.addEventListener('DOMContentLoaded', () => {
+async function appBoot() {
   registerComponents();
 
-  // renders the locator
-  renderComponent(<Loading store={store}/>, store, '.locator-loading');
-});
+  Injector.ready(() => {
+    const store = finalCreateStore(reducers);
+    Injector.reducer.setStore(store);
+
+    // renders the locator
+    renderComponent(<Loading store={store}/>, store, '.locator-loading');
+  });
+
+  // Force this to the end of the execution queue to ensure it's last.
+  window.setTimeout(() => Injector.load(), 0);
+};
+
+window.onload = appBoot;
+

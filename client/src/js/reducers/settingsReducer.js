@@ -4,9 +4,11 @@ import ActionType from 'actions/ActionTypes';
 const defaultState = {
   loadedSettings: false,
   loadedMapStyle: false,
+  loadedFormSchema: false,
 
   mapStyle: null,
   markerImagePath: false,
+  formSchema: {},
 
   unit: 'm',
 
@@ -50,8 +52,8 @@ function settings() {
 }
 
 function didSettingsLoad(state = defaultState) {
-  const { loadedMapStyle } = state;
-  return loadedMapStyle === true;
+  const { loadedMapStyle, loadedFormSchema } = state;
+  return loadedMapStyle === true && loadedFormSchema === true;
 }
 
 /**
@@ -90,6 +92,22 @@ export default function reducer(state = defaultState, action) {
         ...settings(),
         loadedSettings: loaded,
         loadedMapStyle: true,
+      };
+    }
+
+    case ActionType.FETCH_FORM_SCHEMA_SUCCESS: {
+      const { data } = action.payload;
+      const loaded = didSettingsLoad({
+        ...state,
+        loadedFormSchema: true,
+      });
+
+      return {
+        ...state,
+        ...settings(),
+        loadedSettings: loaded,
+        loadedFormSchema: true,
+        formSchema: data,
       };
     }
 

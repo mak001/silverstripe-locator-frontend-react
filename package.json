@@ -75,6 +75,13 @@
       "node_modules",
       "client/src/js"
     ],
+    "modulePaths": [
+      "client/src",
+      "../../silverstripe/admin/client/src",
+      "../../silverstripe/admin/node_modules",
+      "vendor/silverstripe/admin/client/src",
+      "vendor/silverstripe/admin/node_modules"
+    ],
     "setupFiles": [
       "<rootDir>/client/src/tests/shim.js",
       "<rootDir>/client/src/tests/setup.js"

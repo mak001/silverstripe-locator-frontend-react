@@ -1,0 +1,47 @@
+const webpackConfig = require('@silverstripe/webpack-config');
+
+/**
+ * Exports a list of modules provided by SilverStripe
+ */
+module.exports = () => Object.assign(
+  {},
+  {
+    'components/ActionMenu/ActionMenu': 'ActionMenu',
+    'components/Badge/Badge': 'Badge',
+    'components/TextField/TextField': 'TextField',
+    'components/HiddenField/HiddenField': 'HiddenField',
+    'components/DateField/DateField': 'DateField',
+    'components/TimeField/TimeField': 'TimeField',
+    'components/DatetimeField/DatetimeField': 'DatetimeField',
+    'components/CheckboxField/CheckboxField': 'CheckboxField',
+    'components/CheckboxSetField/CheckboxSetField': 'CheckboxSetField',
+    'components/OptionsetField/OptionsetField': 'OptionsetField',
+    'components/GridField/GridField': 'GridField',
+    'components/GridFieldActions/GridFieldActions': 'GridFieldActions',
+    'components/SingleSelectField/SingleSelectField': 'SingleSelectField',
+    'components/PopoverField/PopoverField': 'PopoverField',
+    'components/HeaderField/HeaderField': 'HeaderField',
+    'components/LiteralField/LiteralField': 'LiteralField',
+    'components/HtmlReadonlyField/HtmlReadonlyField': 'HtmlReadonlyField',
+    'components/LookupField/LookupField': 'LookupField',
+    'components/CompositeField/CompositeField': 'CompositeField',
+    'components/LabelField/LabelField': 'LabelField',
+    'components/Tabs/Tabs': 'Tabs',
+    'components/Tabs/TabItem': 'TabItem',
+    'components/FormAction/FormAction': 'FormAction',
+    'components/FieldGroup/FieldGroup': 'FieldGroup',
+    'components/TreeDropdownField/TreeDropdownField': 'TreeDropdownField',
+    'components/FormBuilderModal/FormBuilderModal': 'FormBuilderModal',
+    'components/NotFoundComponent/NotFoundComponent': 'NotFoundComponent',
+    'components/Form/Form': 'Form',
+    'components/FormAlert/FormAlert': 'FormAlert',
+    'components/Preview/Preview': 'Preview',
+    'containers/Form/Form': 'ReduxForm',
+    'components/UsedOnTable/UsedOnTable': 'UsedOnTable',
+    'components/Loading/Loading': 'Loading',
+    'components/ViewModeToggle/ViewModeToggle': 'ViewModeToggle',
+    'components/Search/Search': 'Search',
+    'components/Search/SearchToggle': 'SearchToggle',
+  },
+  webpackConfig.externalJS(),
+);

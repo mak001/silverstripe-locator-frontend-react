@@ -6,13 +6,28 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import {faSearch} from '@fortawesome/fontawesome-free-solid';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import {loadComponent} from 'lib/Injector';
-import { reduxForm } from 'redux-form'
+import FormBuilder/*, { basePropTypes, schemaPropType }*/ from 'components/FormBuilder/FormBuilder';
 
 
 import {fetchLocations} from 'actions/locationActions';
 import {search} from 'actions/searchActions';
 import {changePage} from 'actions/listActions';
 import CategoryDropDown from 'components/search/CategoryDropDown';
+
+/**
+ * Creates a dot-separated identifier for forms generated
+ * with schemas (e.g. FormBuilderLoader)
+ *
+ * @param {string} identifier
+ * @param {object} schema
+ * @returns {string}
+ */
+function createFormIdentifierFromProps({ identifier, schema = {} }) {
+  return [
+    identifier,
+    schema.schema && schema.schema.name,
+  ].filter(id => id).join('.');
+}
 
 export class SearchBar extends Component {
   /**
@@ -64,6 +79,7 @@ export class SearchBar extends Component {
    * 'Submits' form. Really just fires state change and changes the url.
    */
   handleSubmit(event) {
+    /*
     if (typeof event === 'string' || event instanceof String) {
       this.searchAddress = event;
       document.getElementsByName('address')[0].value = event;
@@ -71,7 +87,8 @@ export class SearchBar extends Component {
       // stops the submit from reloading
       event.preventDefault();
     }
-
+    */
+/*
     const address = document.getElementsByName('address')[0].value;
     const radius = SearchBar.getDropdownValue('Radius');
     const category = SearchBar.getDropdownValue('Category');
@@ -107,6 +124,7 @@ export class SearchBar extends Component {
     window.history.pushState({
       path: newurl,
     }, '', newurl);
+    */
   }
 
   handleAddressChange(searchAddress) {
@@ -172,6 +190,21 @@ export class SearchBar extends Component {
    * @returns {XML}
    */
   render() {
+    const { schema } = this.props;
+    const baseFormComponent = loadComponent('ReduxForm');
+    const baseFieldComponent = loadComponent('ReduxFormField');
+    return (
+      <div>
+        <FormBuilder
+          schema={schema}
+          form={createFormIdentifierFromProps('locator.search', schema)}
+          onSubmit={this.handleSubmit()}
+          baseFormComponent={baseFormComponent}
+          baseFieldComponent={baseFieldComponent}
+        />
+      </div>
+    );
+    /*
     const {
       address, category, autocomplete
     } = this.props;
@@ -189,7 +222,6 @@ export class SearchBar extends Component {
 
     return (
       <form onSubmit={this.handleSubmit} className="search">
-        {/* not a fieldset because no flexbox */}
         <div className="fieldset">
           <div className="address-input form-group">
             <label htmlFor="address"
@@ -229,7 +261,7 @@ export class SearchBar extends Component {
           </div>
         </div>
       </form>
-    );
+    );*/
   }
 }
 
@@ -281,6 +313,8 @@ export function mapStateToProps(state) {
     unit: state.settings.unit,
     autocomplete: state.settings.autocomplete,
     center: state.settings.defaultCenter,
+    schema: state.settings.formSchema,
+    identifier: 'locator.search',
   };
 }
 

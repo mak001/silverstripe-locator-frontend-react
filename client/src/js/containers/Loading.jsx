@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import renderComponent from 'renderComponent';
 import { fetchLocations } from 'actions/locationActions';
-import { fetchMapStyle } from 'actions/settingsActions';
+import { fetchMapStyle, fetchFormSchema } from 'actions/settingsActions';
 
 import Search from 'components/search/SearchBar';
 import MapContainer from 'containers/map/MapContainer';
@@ -18,6 +18,7 @@ export class Loading extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch(fetchMapStyle());
+    dispatch(fetchFormSchema());
   }
 
   /**

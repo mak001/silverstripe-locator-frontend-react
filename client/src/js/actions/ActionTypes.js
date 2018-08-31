@@ -8,6 +8,7 @@ const ActionTypes = {
 
   // settings fetching
   FETCH_MAP_STYLE: 'FETCH_MAP_STYLE',
+  FETCH_FORM_SCHEMA: 'FETCH_FORM_SCHEMA',
 
   // Search action
   SEARCH: 'SEARCH',
@@ -28,5 +29,10 @@ ActionTypes.FETCH_LOCATIONS_ERROR = `${ActionTypes.FETCH_LOCATIONS}_ERROR`;
 ActionTypes.FETCH_MAP_STYLE_LOADING = `${ActionTypes.FETCH_MAP_STYLE}_LOADING`;
 ActionTypes.FETCH_MAP_STYLE_SUCCESS = `${ActionTypes.FETCH_MAP_STYLE}_SUCCESS`;
 ActionTypes.FETCH_MAP_STYLE_ERROR = `${ActionTypes.FETCH_MAP_STYLE}_ERROR`;
+
+// uses the base FETCH_FORM_SCHEMA to construct resulting actions (can't do this in the actual const)
+ActionTypes.FETCH_FORM_SCHEMA_LOADING = `${ActionTypes.FETCH_FORM_SCHEMA}_LOADING`;
+ActionTypes.FETCH_FORM_SCHEMA_SUCCESS = `${ActionTypes.FETCH_FORM_SCHEMA}_SUCCESS`;
+ActionTypes.FETCH_FORM_SCHEMA_ERROR = `${ActionTypes.FETCH_FORM_SCHEMA}_ERROR`;
 
 export default ActionTypes;

@@ -3,11 +3,14 @@
 namespace Dynamic\Locator\React\Extensions;
 
 use Dynamic\SilverStripeGeocoder\GoogleGeocoder;
+use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Manifest\ModuleResourceLoader;
+use SilverStripe\Forms\Schema\FormSchema;
 use SilverStripe\Security\SecurityToken;
 use SilverStripe\View\Requirements;
 
@@ -17,6 +20,49 @@ use SilverStripe\View\Requirements;
  */
 class LocatorControllerExtension extends Extension
 {
+
+    /**
+     * @var array
+     */
+    private static $allowed_actions = [
+        'schema',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $dependencies = [
+        'FormSchema' => '%$' . FormSchema::class,
+    ];
+
+    /**
+     * Current form schema helper
+     *
+     * @var FormSchema
+     */
+    protected $schema = null;
+
+    /**
+     * Get form schema helper
+     *
+     * @return FormSchema
+     */
+    public function getFormSchema()
+    {
+        return $this->schema;
+    }
+
+    /**
+     * Set form schema helper for this controller
+     *
+     * @param FormSchema $schema
+     * @return $this
+     */
+    public function setFormSchema(FormSchema $schema)
+    {
+        $this->schema = $schema;
+        return $this;
+    }
 
     /**
      *
@@ -137,5 +183,52 @@ class LocatorControllerExtension extends Extension
         $this->owner->extend('updateClientConfig', $clientConfig);
 
         return Convert::raw2json($clientConfig);
+    }
+
+    /**
+     * Gets a JSON schema representing the search form.
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
+    public function schema($request) {
+        return $this->getSchemaResponse("locator.search", $this->owner->LocationSearch());
+    }
+
+    /**
+     * Check if the current request has a X-Formschema-Request header set.
+     * Used by conditional logic that responds to validation results
+     *
+     * @return bool
+     */
+    protected function getSchemaRequested()
+    {
+        $parts = $this->owner->getRequest()->getHeader(LeftAndMain::SCHEMA_HEADER);
+        return !empty($parts);
+    }
+
+    /**
+     * Generate schema for the given form based on the X-Formschema-Request header value
+     *
+     * @param string $schemaID ID for this schema. Required.
+     * @param Form $form Required for 'state' or 'schema' response
+     * @param ValidationResult $errors Required for 'error' response
+     * @param array $extraData Any extra data to be merged with the schema response
+     * @return HTTPResponse
+     */
+    protected function getSchemaResponse($schemaID, $form = null, ValidationResult $errors = null, $extraData = [])
+    {
+        $parts = $this->owner->getRequest()->getHeader(LeftAndMain::SCHEMA_HEADER);
+        $data = $this
+            ->getFormSchema()
+            ->getMultipartSchema($parts, $schemaID, $form, $errors);
+
+        if ($extraData) {
+            $data = array_merge($data, $extraData);
+        }
+
+        $response = new HTTPResponse(Convert::raw2json($data));
+        $response->addHeader('Content-Type', 'application/json');
+        return $response;
     }
 }
