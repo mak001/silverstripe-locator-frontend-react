@@ -4,14 +4,13 @@ const webpackConfig = require('@silverstripe/webpack-config');
 
 const {
 // resolveJS,
-//  externalJS,
+  externalJS,
   moduleJS,
   pluginJS,
   moduleCSS,
   pluginCSS,
 } = webpackConfig;
 
-const externalJS = require('./js/external');
 const resolveJS = require('./js/resolve');
 
 const PATHS = {

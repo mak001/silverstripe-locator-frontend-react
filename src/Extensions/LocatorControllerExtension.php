@@ -17,6 +17,8 @@ use SilverStripe\View\Requirements;
 /**
  * Class LocatorControllerExtension
  * @package Dynamic\Locator\React\Extensions
+ *
+ * @property \Dynamic\Locator\LocatorController|\Dynamic\Locator\React\Extensions\LocatorControllerExtension $owner
  */
 class LocatorControllerExtension extends Extension
 {
@@ -167,7 +169,7 @@ class LocatorControllerExtension extends Extension
         $token = SecurityToken::inst();
 
         $clientConfig = [
-            'name' => static::class,
+            'name' => get_class($this->owner),
             'url' => trim($this->owner->Link(), '/'),
             'baseUrl' => Director::baseURL(),
             'absoluteBaseUrl' => Director::absoluteBaseURL(),
@@ -178,8 +180,8 @@ class LocatorControllerExtension extends Extension
                     'url' => '',
                 ],
             ],
+            'debugging' => $this->owner->config()->get('debugging'),
         ];
-
         $this->owner->extend('updateClientConfig', $clientConfig);
 
         return Convert::raw2json($clientConfig);
@@ -192,7 +194,7 @@ class LocatorControllerExtension extends Extension
      * @return HTTPResponse
      */
     public function schema($request) {
-        return $this->getSchemaResponse("locator.search", $this->owner->LocationSearch());
+        return $this->getSchemaResponse("Locator.SearchForm", $this->owner->LocationSearch());
     }
 
     /**

@@ -14,7 +14,7 @@ import promise from 'redux-promise-middleware';
 import Injector from 'lib/Injector';
 
 import registerComponents from 'boot/registerComponents';
-import reducers from 'reducers';
+import registerReducers from 'reducers';
 import renderComponent from 'renderComponent';
 
 import Loading from 'containers/Loading';
@@ -62,8 +62,20 @@ async function appBoot() {
   });
 
   // Force this to the end of the execution queue to ensure it's last.
-  window.setTimeout(() => Injector.load(), 0);
+  //window.setTimeout(() => Injector.load(), 0);
 };
 
-window.onload = appBoot;
+//window.onload = appBoot;
 
+document.addEventListener('DOMContentLoaded', () => {
+  registerComponents();
+  registerReducers();
+
+  Injector.ready(() => {
+    window.setTimeout(() =>
+      // renders the locator
+      renderComponent(<Loading store={window.ss.store}/>, window.ss.store, '.locator-loading'),
+      0
+    );
+  });
+});

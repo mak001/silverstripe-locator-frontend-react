@@ -6,7 +6,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import {faSearch} from '@fortawesome/fontawesome-free-solid';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import {loadComponent} from 'lib/Injector';
-import FormBuilder/*, { basePropTypes, schemaPropType }*/ from 'components/FormBuilder/FormBuilder';
+import FormBuilderLoader from 'containers/FormBuilderLoader/FormBuilderLoader';
 
 
 import {fetchLocations} from 'actions/locationActions';
@@ -29,7 +29,7 @@ function createFormIdentifierFromProps({ identifier, schema = {} }) {
   ].filter(id => id).join('.');
 }
 
-export class SearchBar extends Component {
+export class SearchForm extends Component {
   /**
    * Turns a javascript object into url params.
    * Skips keys without values
@@ -190,18 +190,14 @@ export class SearchBar extends Component {
    * @returns {XML}
    */
   render() {
-    const { schema } = this.props;
-    const baseFormComponent = loadComponent('ReduxForm');
-    const baseFieldComponent = loadComponent('ReduxFormField');
+    const { identifier, formSchemaUrl } = this.props;
     return (
       <div>
-        <FormBuilder
-          schema={schema}
-          form={createFormIdentifierFromProps('locator.search', schema)}
+        {formSchemaUrl &&<FormBuilderLoader
+          identifier={identifier}
+          schemaUrl={formSchemaUrl}
           onSubmit={this.handleSubmit()}
-          baseFormComponent={baseFormComponent}
-          baseFieldComponent={baseFieldComponent}
-        />
+        />}
       </div>
     );
     /*
@@ -265,7 +261,7 @@ export class SearchBar extends Component {
   }
 }
 
-SearchBar.propTypes = {
+SearchForm.propTypes = {
   address: PropTypes.string.isRequired,
   radius: PropTypes.oneOfType([
     PropTypes.number,
@@ -301,21 +297,21 @@ SearchBar.propTypes = {
 export function mapStateToProps(state) {
   return {
     // the defaults - for when it gets loaded from the url
-    address: state.search.address,
-    radius: state.search.radius,
-    category: state.search.category,
+    address: state.locator.search.address,
+    radius: state.locator.search.radius,
+    category: state.locator.search.category,
 
     // the options
-    radii: state.settings.radii,
-    categories: state.settings.categories,
+    radii: state.locator.settings.radii,
+    categories: state.locator.settings.categories,
 
     // other
-    unit: state.settings.unit,
-    autocomplete: state.settings.autocomplete,
-    center: state.settings.defaultCenter,
-    schema: state.settings.formSchema,
-    identifier: 'locator.search',
+    unit: state.locator.settings.unit,
+    autocomplete: state.locator.settings.autocomplete,
+    center: state.locator.settings.defaultCenter,
+    identifier: 'Locator.SearchForm',
+    formSchemaUrl: state.config.absoluteBaseUrl + state.config.url + '/schema',
   };
 }
 
-export default connect(mapStateToProps)(SearchBar);
+export default connect(mapStateToProps)(SearchForm);

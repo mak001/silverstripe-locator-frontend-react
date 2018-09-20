@@ -251,7 +251,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.fetchMapStyle = fetchMapStyle;
-exports.fetchFormSchema = fetchFormSchema;
 
 var _axios = __webpack_require__("./node_modules/axios/index.js");
 
@@ -283,24 +282,6 @@ function fetchMapStyle() {
   };
 }
 
-function fetchFormSchema() {
-  var _window$location2 = window.location,
-      protocol = _window$location2.protocol,
-      host = _window$location2.host,
-      pathname = _window$location2.pathname;
-
-  return {
-    type: _ActionTypes2.default.FETCH_FORM_SCHEMA,
-    payload: _axios2.default.get(protocol + '//' + host + pathname + '/schema', {
-      headers: {
-        'X-Formschema-Request': 'auto,schema,state,errors'
-      },
-      responseType: 'json',
-      responseEncoding: 'utf8'
-    })
-  };
-}
-
 /***/ }),
 
 /***/ "./client/src/js/boot/index.jsx":
@@ -318,17 +299,13 @@ var appBoot = function () {
             (0, _registerComponents2.default)();
 
             _Injector2.default.ready(function () {
-              var store = finalCreateStore(_reducers2.default);
+              var store = finalCreateStore(reducers);
               _Injector2.default.reducer.setStore(store);
 
               (0, _renderComponent2.default)(_react2.default.createElement(_Loading2.default, { store: store }), store, '.locator-loading');
             });
 
-            window.setTimeout(function () {
-              return _Injector2.default.load();
-            }, 0);
-
-          case 3:
+          case 2:
           case 'end':
             return _context.stop();
         }
@@ -393,7 +370,16 @@ var finalCreateStore = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThu
 
 ;
 
-window.onload = appBoot;
+document.addEventListener('DOMContentLoaded', function () {
+  (0, _registerComponents2.default)();
+  (0, _reducers2.default)();
+
+  _Injector2.default.ready(function () {
+    window.setTimeout(function () {
+      return (0, _renderComponent2.default)(_react2.default.createElement(_Loading2.default, { store: window.ss.store }), window.ss.store, '.locator-loading');
+    }, 0);
+  });
+});
 
 /***/ }),
 
@@ -992,253 +978,6 @@ exports.default = CategoryDropDown;
 
 /***/ }),
 
-/***/ "./client/src/js/components/search/SearchBar.jsx":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.SearchBar = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.mapStateToProps = mapStateToProps;
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _reactRedux = __webpack_require__(2);
-
-var _reactFontawesome = __webpack_require__("./node_modules/@fortawesome/react-fontawesome/index.es.js");
-
-var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
-
-var _fontawesomeFreeSolid = __webpack_require__("./node_modules/@fortawesome/fontawesome-free-solid/index.es.js");
-
-var _reactPlacesAutocomplete = __webpack_require__("./node_modules/react-places-autocomplete/dist/index.js");
-
-var _reactPlacesAutocomplete2 = _interopRequireDefault(_reactPlacesAutocomplete);
-
-var _Injector = __webpack_require__(1);
-
-var _FormBuilder = __webpack_require__(7);
-
-var _FormBuilder2 = _interopRequireDefault(_FormBuilder);
-
-var _locationActions = __webpack_require__("./client/src/js/actions/locationActions.js");
-
-var _searchActions = __webpack_require__("./client/src/js/actions/searchActions.js");
-
-var _listActions = __webpack_require__("./client/src/js/actions/listActions.js");
-
-var _CategoryDropDown = __webpack_require__("./client/src/js/components/search/CategoryDropDown.jsx");
-
-var _CategoryDropDown2 = _interopRequireDefault(_CategoryDropDown);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function createFormIdentifierFromProps(_ref) {
-  var identifier = _ref.identifier,
-      _ref$schema = _ref.schema,
-      schema = _ref$schema === undefined ? {} : _ref$schema;
-
-  return [identifier, schema.schema && schema.schema.name].filter(function (id) {
-    return id;
-  }).join('.');
-}
-
-var SearchBar = exports.SearchBar = function (_Component) {
-  _inherits(SearchBar, _Component);
-
-  _createClass(SearchBar, null, [{
-    key: 'objToUrl',
-    value: function objToUrl(obj) {
-      var vars = '';
-
-      Object.keys(obj).forEach(function (key) {
-        var value = obj[key];
-
-        if (value !== undefined && value !== null && value !== '') {
-          vars += key + '=' + value + '&';
-        }
-      });
-
-      return vars.replace(/([&\s]+$)/g, '').replace(/(\s)/g, '+');
-    }
-  }, {
-    key: 'getDropdownValue',
-    value: function getDropdownValue(name) {
-      if (document.getElementsByName(name)[0] !== undefined) {
-        return document.getElementsByName(name)[0].value;
-      }
-      return '';
-    }
-  }]);
-
-  function SearchBar(props) {
-    _classCallCheck(this, SearchBar);
-
-    var _this = _possibleConstructorReturn(this, (SearchBar.__proto__ || Object.getPrototypeOf(SearchBar)).call(this, props));
-
-    _this.searchAddress = props.address;
-
-    _this.handleSubmit = _this.handleSubmit.bind(_this);
-    _this.handleAddressChange = _this.handleAddressChange.bind(_this);
-    return _this;
-  }
-
-  _createClass(SearchBar, [{
-    key: 'handleSubmit',
-    value: function handleSubmit(event) {}
-  }, {
-    key: 'handleAddressChange',
-    value: function handleAddressChange(searchAddress) {
-      this.searchAddress = searchAddress;
-    }
-  }, {
-    key: 'getRadiiSource',
-    value: function getRadiiSource() {
-      var _props = this.props,
-          radii = _props.radii,
-          unit = _props.unit;
-
-      return radii.map(function (radius) {
-        return {
-          value: radius,
-          title: radius + ' ' + unit
-        };
-      });
-    }
-  }, {
-    key: 'getCategorySource',
-    value: function getCategorySource() {
-      var categories = this.props.categories;
-
-      return categories.map(function (category) {
-        return {
-          value: category.ID,
-          title: category.Name
-        };
-      });
-    }
-  }, {
-    key: 'getAddressInput',
-    value: function getAddressInput() {
-      var _props2 = this.props,
-          address = _props2.address,
-          radii = _props2.radii,
-          center = _props2.center,
-          autocomplete = _props2.autocomplete;
-
-      if (autocomplete === true) {
-        var inputProps = {
-          value: this.searchAddress,
-          onChange: this.handleAddressChange,
-          placeholder: ss.i18n._t('Locator.ADDRESS_FIELD', 'Address or zip code'),
-          name: 'address'
-        };
-        var cssClasses = {
-          root: 'form-control autocomplete-root',
-          input: 'form-control'
-        };
-        var options = {
-          location: new google.maps.LatLng(center.lat, center.lng),
-          radius: Math.max.apply(Math, _toConsumableArray(radii))
-        };
-        return _react2.default.createElement(_reactPlacesAutocomplete2.default, {
-          inputProps: inputProps,
-          classNames: cssClasses,
-          onSelect: this.handleSubmit,
-          onEnterKeyDown: this.handleSubmit,
-          options: options
-        });
-      }
-      return _react2.default.createElement('input', {
-        type: 'text',
-        name: 'address',
-        className: 'form-control',
-        placeholder: ss.i18n._t('Locator.ADDRESS_FIELD', 'Address or zip code'),
-        defaultValue: address
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var schema = this.props.schema;
-
-      var baseFormComponent = (0, _Injector.loadComponent)('ReduxForm');
-      var baseFieldComponent = (0, _Injector.loadComponent)('ReduxFormField');
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(_FormBuilder2.default, {
-          schema: schema,
-          form: createFormIdentifierFromProps('locator.search', schema),
-          onSubmit: this.handleSubmit(),
-          baseFormComponent: baseFormComponent,
-          baseFieldComponent: baseFieldComponent
-        })
-      );
-    }
-  }]);
-
-  return SearchBar;
-}(_react.Component);
-
-SearchBar.propTypes = {
-  address: _propTypes2.default.string.isRequired,
-  radius: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]).isRequired,
-  category: _propTypes2.default.string.isRequired,
-
-  radii: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
-
-  categories: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
-  unit: _propTypes2.default.string.isRequired,
-  autocomplete: _propTypes2.default.bool.isRequired,
-  center: _propTypes2.default.shape({
-    lat: _propTypes2.default.number.isRequired,
-    lng: _propTypes2.default.number.isRequired
-  }).isRequired,
-  dispatch: _propTypes2.default.func.isRequired
-};
-
-function mapStateToProps(state) {
-  return {
-    address: state.search.address,
-    radius: state.search.radius,
-    category: state.search.category,
-
-    radii: state.settings.radii,
-    categories: state.settings.categories,
-
-    unit: state.settings.unit,
-    autocomplete: state.settings.autocomplete,
-    center: state.settings.defaultCenter,
-    schema: state.settings.formSchema,
-    identifier: 'locator.search'
-  };
-}
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(SearchBar);
-
-/***/ }),
-
 /***/ "./client/src/js/containers/Loading.jsx":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1272,9 +1011,9 @@ var _locationActions = __webpack_require__("./client/src/js/actions/locationActi
 
 var _settingsActions = __webpack_require__("./client/src/js/actions/settingsActions.js");
 
-var _SearchBar = __webpack_require__("./client/src/js/components/search/SearchBar.jsx");
+var _SearchForm = __webpack_require__("./client/src/js/containers/search/SearchForm.jsx");
 
-var _SearchBar2 = _interopRequireDefault(_SearchBar);
+var _SearchForm2 = _interopRequireDefault(_SearchForm);
 
 var _MapContainer = __webpack_require__("./client/src/js/containers/map/MapContainer.jsx");
 
@@ -1307,7 +1046,6 @@ var Loading = exports.Loading = function (_Component) {
       var dispatch = this.props.dispatch;
 
       dispatch((0, _settingsActions.fetchMapStyle)());
-      dispatch((0, _settingsActions.fetchFormSchema)());
     }
   }, {
     key: 'shouldComponentUpdate',
@@ -1340,7 +1078,7 @@ var Loading = exports.Loading = function (_Component) {
         }));
       }
 
-      (0, _renderComponent2.default)(_react2.default.createElement(_SearchBar2.default, null), store, '.locator-search');
+      (0, _renderComponent2.default)(_react2.default.createElement(_SearchForm2.default, null), store, '.locator-search');
       (0, _renderComponent2.default)(_react2.default.createElement(_List2.default, null), store, '.locator-list');
       (0, _renderComponent2.default)(_react2.default.createElement(_MapContainer2.default, null), store, '.locator-map');
     }
@@ -1380,13 +1118,13 @@ Loading.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    isLoading: state.map.isLoading,
+    isLoading: state.locator.map.isLoading,
 
-    loadedSettings: state.settings.loadedSettings,
-    unit: state.settings.unit,
-    address: state.search.address,
-    radius: state.search.radius,
-    category: state.search.category
+    loadedSettings: state.locator.settings.loadedSettings,
+    unit: state.locator.settings.unit,
+    address: state.locator.search.address,
+    radius: state.locator.search.radius,
+    category: state.locator.search.category
   };
 }
 
@@ -1585,17 +1323,17 @@ List.defaultProps = {
 
 function mapStateToProps(state) {
   return {
-    current: state.map.current,
-    search: state.search.address,
-    unit: state.settings.unit,
-    unitText: state.settings.unitText,
-    directionsText: state.settings.directionsText,
-    emailText: state.settings.emailText,
-    websiteText: state.settings.websiteText,
-    template: state.settings.listTemplate,
-    locations: state.locations.locations,
-    defaultLimit: state.settings.defaultLimit,
-    page: state.list.page
+    current: state.locator.map.current,
+    search: state.locator.search.address,
+    unit: state.locator.settings.unit,
+    unitText: state.locator.settings.unitText,
+    directionsText: state.locator.settings.directionsText,
+    emailText: state.locator.settings.emailText,
+    websiteText: state.locator.settings.websiteText,
+    template: state.locator.settings.listTemplate,
+    locations: state.locator.locations.locations,
+    defaultLimit: state.locator.settings.defaultLimit,
+    page: state.locator.list.page
   };
 }
 
@@ -2109,22 +1847,267 @@ MapContainer.defaultProps = {
 
 function mapStateToProps(state) {
   return {
-    current: state.map.current,
-    showCurrent: state.map.showCurrent,
-    clusters: state.settings.clusters,
-    mapStyle: state.settings.mapStyle,
-    markerImagePath: state.settings.markerImagePath,
-    locations: state.locations.locations,
-    center: state.map.center,
-    defaultCenter: state.settings.defaultCenter,
+    current: state.locator.map.current,
+    showCurrent: state.locator.map.showCurrent,
+    clusters: state.locator.settings.clusters,
+    mapStyle: state.locator.settings.mapStyle,
+    markerImagePath: state.locator.settings.markerImagePath,
+    locations: state.locator.locations.locations,
+    center: state.locator.map.center,
+    defaultCenter: state.locator.settings.defaultCenter,
 
-    defaultLimit: state.settings.defaultLimit,
-    emailText: state.settings.emailText,
-    websiteText: state.settings.websiteText
+    defaultLimit: state.locator.settings.defaultLimit,
+    emailText: state.locator.settings.emailText,
+    websiteText: state.locator.settings.websiteText
   };
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(MapContainer);
+
+/***/ }),
+
+/***/ "./client/src/js/containers/search/SearchForm.jsx":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SearchForm = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+exports.mapStateToProps = mapStateToProps;
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactRedux = __webpack_require__(2);
+
+var _reactFontawesome = __webpack_require__("./node_modules/@fortawesome/react-fontawesome/index.es.js");
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+
+var _fontawesomeFreeSolid = __webpack_require__("./node_modules/@fortawesome/fontawesome-free-solid/index.es.js");
+
+var _reactPlacesAutocomplete = __webpack_require__("./node_modules/react-places-autocomplete/dist/index.js");
+
+var _reactPlacesAutocomplete2 = _interopRequireDefault(_reactPlacesAutocomplete);
+
+var _Injector = __webpack_require__(1);
+
+var _FormBuilderLoader = __webpack_require__(9);
+
+var _FormBuilderLoader2 = _interopRequireDefault(_FormBuilderLoader);
+
+var _locationActions = __webpack_require__("./client/src/js/actions/locationActions.js");
+
+var _searchActions = __webpack_require__("./client/src/js/actions/searchActions.js");
+
+var _listActions = __webpack_require__("./client/src/js/actions/listActions.js");
+
+var _CategoryDropDown = __webpack_require__("./client/src/js/components/search/CategoryDropDown.jsx");
+
+var _CategoryDropDown2 = _interopRequireDefault(_CategoryDropDown);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function createFormIdentifierFromProps(_ref) {
+  var identifier = _ref.identifier,
+      _ref$schema = _ref.schema,
+      schema = _ref$schema === undefined ? {} : _ref$schema;
+
+  return [identifier, schema.schema && schema.schema.name].filter(function (id) {
+    return id;
+  }).join('.');
+}
+
+var SearchForm = exports.SearchForm = function (_Component) {
+  _inherits(SearchForm, _Component);
+
+  _createClass(SearchForm, null, [{
+    key: 'objToUrl',
+    value: function objToUrl(obj) {
+      var vars = '';
+
+      Object.keys(obj).forEach(function (key) {
+        var value = obj[key];
+
+        if (value !== undefined && value !== null && value !== '') {
+          vars += key + '=' + value + '&';
+        }
+      });
+
+      return vars.replace(/([&\s]+$)/g, '').replace(/(\s)/g, '+');
+    }
+  }, {
+    key: 'getDropdownValue',
+    value: function getDropdownValue(name) {
+      if (document.getElementsByName(name)[0] !== undefined) {
+        return document.getElementsByName(name)[0].value;
+      }
+      return '';
+    }
+  }]);
+
+  function SearchForm(props) {
+    _classCallCheck(this, SearchForm);
+
+    var _this = _possibleConstructorReturn(this, (SearchForm.__proto__ || Object.getPrototypeOf(SearchForm)).call(this, props));
+
+    _this.searchAddress = props.address;
+
+    _this.handleSubmit = _this.handleSubmit.bind(_this);
+    _this.handleAddressChange = _this.handleAddressChange.bind(_this);
+    return _this;
+  }
+
+  _createClass(SearchForm, [{
+    key: 'handleSubmit',
+    value: function handleSubmit(event) {}
+  }, {
+    key: 'handleAddressChange',
+    value: function handleAddressChange(searchAddress) {
+      this.searchAddress = searchAddress;
+    }
+  }, {
+    key: 'getRadiiSource',
+    value: function getRadiiSource() {
+      var _props = this.props,
+          radii = _props.radii,
+          unit = _props.unit;
+
+      return radii.map(function (radius) {
+        return {
+          value: radius,
+          title: radius + ' ' + unit
+        };
+      });
+    }
+  }, {
+    key: 'getCategorySource',
+    value: function getCategorySource() {
+      var categories = this.props.categories;
+
+      return categories.map(function (category) {
+        return {
+          value: category.ID,
+          title: category.Name
+        };
+      });
+    }
+  }, {
+    key: 'getAddressInput',
+    value: function getAddressInput() {
+      var _props2 = this.props,
+          address = _props2.address,
+          radii = _props2.radii,
+          center = _props2.center,
+          autocomplete = _props2.autocomplete;
+
+      if (autocomplete === true) {
+        var inputProps = {
+          value: this.searchAddress,
+          onChange: this.handleAddressChange,
+          placeholder: ss.i18n._t('Locator.ADDRESS_FIELD', 'Address or zip code'),
+          name: 'address'
+        };
+        var cssClasses = {
+          root: 'form-control autocomplete-root',
+          input: 'form-control'
+        };
+        var options = {
+          location: new google.maps.LatLng(center.lat, center.lng),
+          radius: Math.max.apply(Math, _toConsumableArray(radii))
+        };
+        return _react2.default.createElement(_reactPlacesAutocomplete2.default, {
+          inputProps: inputProps,
+          classNames: cssClasses,
+          onSelect: this.handleSubmit,
+          onEnterKeyDown: this.handleSubmit,
+          options: options
+        });
+      }
+      return _react2.default.createElement('input', {
+        type: 'text',
+        name: 'address',
+        className: 'form-control',
+        placeholder: ss.i18n._t('Locator.ADDRESS_FIELD', 'Address or zip code'),
+        defaultValue: address
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props3 = this.props,
+          identifier = _props3.identifier,
+          formSchemaUrl = _props3.formSchemaUrl;
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        formSchemaUrl && _react2.default.createElement(_FormBuilderLoader2.default, {
+          identifier: identifier,
+          schemaUrl: formSchemaUrl,
+          onSubmit: this.handleSubmit()
+        })
+      );
+    }
+  }]);
+
+  return SearchForm;
+}(_react.Component);
+
+SearchForm.propTypes = {
+  address: _propTypes2.default.string.isRequired,
+  radius: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]).isRequired,
+  category: _propTypes2.default.string.isRequired,
+
+  radii: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
+
+  categories: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
+  unit: _propTypes2.default.string.isRequired,
+  autocomplete: _propTypes2.default.bool.isRequired,
+  center: _propTypes2.default.shape({
+    lat: _propTypes2.default.number.isRequired,
+    lng: _propTypes2.default.number.isRequired
+  }).isRequired,
+  dispatch: _propTypes2.default.func.isRequired
+};
+
+function mapStateToProps(state) {
+  return {
+    address: state.locator.search.address,
+    radius: state.locator.search.radius,
+    category: state.locator.search.category,
+
+    radii: state.locator.settings.radii,
+    categories: state.locator.settings.categories,
+
+    unit: state.locator.settings.unit,
+    autocomplete: state.locator.settings.autocomplete,
+    center: state.locator.settings.defaultCenter,
+    identifier: 'Locator.SearchForm',
+    formSchemaUrl: state.config.absoluteBaseUrl + state.config.url + '/schema'
+  };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(SearchForm);
 
 /***/ }),
 
@@ -2142,9 +2125,9 @@ var _redux = __webpack_require__(4);
 
 var _reduxForm = __webpack_require__(8);
 
-var _SchemaReducer = __webpack_require__("./client/src/js/state/schema/SchemaReducer.js");
+var _Injector = __webpack_require__(1);
 
-var _SchemaReducer2 = _interopRequireDefault(_SchemaReducer);
+var _Injector2 = _interopRequireDefault(_Injector);
 
 var _searchReducer = __webpack_require__("./client/src/js/reducers/searchReducer.js");
 
@@ -2168,21 +2151,17 @@ var _listReducer2 = _interopRequireDefault(_listReducer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var FormReducer = (0, _redux.combineReducers)({
-  formState: _reduxForm.reducer,
-  formSchemas: _SchemaReducer2.default
-});
+var registerReducers = function registerReducers() {
+  _Injector2.default.reducer.register('locator', (0, _redux.combineReducers)({
+    search: _searchReducer2.default,
+    map: _mapReducer2.default,
+    settings: _settingsReducer2.default,
+    locations: _locationReducer2.default,
+    list: _listReducer2.default
+  }));
+};
 
-var reducers = (0, _redux.combineReducers)({
-  search: _searchReducer2.default,
-  map: _mapReducer2.default,
-  settings: _settingsReducer2.default,
-  locations: _locationReducer2.default,
-  list: _listReducer2.default,
-  form: FormReducer
-});
-
-exports.default = reducers;
+exports.default = registerReducers;
 
 /***/ }),
 
@@ -2426,7 +2405,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var defaultState = {
   loadedSettings: false,
-  loadedMapStyle: false,
   loadedFormSchema: false,
 
   mapStyle: null,
@@ -2469,10 +2447,9 @@ function settings() {
 
 function didSettingsLoad() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
-  var loadedMapStyle = state.loadedMapStyle,
-      loadedFormSchema = state.loadedFormSchema;
+  var loadedMapStyle = state.loadedMapStyle;
 
-  return loadedMapStyle === true && loadedFormSchema === true;
+  return loadedMapStyle === true;
 }
 
 function reducer() {
@@ -2507,21 +2484,6 @@ function reducer() {
         return _extends({}, state, settings(), {
           loadedSettings: _loaded,
           loadedMapStyle: true
-        });
-      }
-
-    case _ActionTypes2.default.FETCH_FORM_SCHEMA_SUCCESS:
-      {
-        var _data = action.payload.data;
-
-        var _loaded2 = didSettingsLoad(_extends({}, state, {
-          loadedFormSchema: true
-        }));
-
-        return _extends({}, state, settings(), {
-          loadedSettings: _loaded2,
-          loadedFormSchema: true,
-          formSchema: _data
         });
       }
 
@@ -2563,98 +2525,6 @@ function renderComponent(component, store, selector) {
       { store: store },
       component
     ), element);
-  }
-}
-
-/***/ }),
-
-/***/ "./client/src/js/state/schema/SchemaActionTypes.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var ACTION_TYPES = {
-  SET_SCHEMA: 'SET_SCHEMA',
-  SET_SCHEMA_STATE_OVERRIDES: 'SET_SCHEMA_STATE_OVERRIDES',
-  SET_SCHEMA_LOADING: 'SET_SCHEMA_LOADING'
-};
-
-exports.default = ACTION_TYPES;
-
-/***/ }),
-
-/***/ "./client/src/js/state/schema/SchemaReducer.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.default = schemaReducer;
-
-var _deepFreezeStrict = __webpack_require__(6);
-
-var _deepFreezeStrict2 = _interopRequireDefault(_deepFreezeStrict);
-
-var _SchemaActionTypes = __webpack_require__("./client/src/js/state/schema/SchemaActionTypes.js");
-
-var _SchemaActionTypes2 = _interopRequireDefault(_SchemaActionTypes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var initialState = (0, _deepFreezeStrict2.default)({});
-
-function schemaReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-  var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-  switch (action.type) {
-    case _SchemaActionTypes2.default.SET_SCHEMA:
-      {
-        var oldSchema = state[action.payload.id] || {};
-
-        return (0, _deepFreezeStrict2.default)(_extends({}, state, _defineProperty({}, action.payload.id, _extends({}, oldSchema, action.payload))));
-      }
-
-    case _SchemaActionTypes2.default.SET_SCHEMA_STATE_OVERRIDES:
-      {
-        var schema = state[action.payload.id] || {};
-        var stateOverride = action.payload.stateOverride;
-
-        if (!stateOverride || !stateOverride.fields) {
-          return state;
-        }
-
-        return (0, _deepFreezeStrict2.default)(_extends({}, state, _defineProperty({}, action.payload.id, _extends({}, schema, {
-          stateOverride: stateOverride
-        }))));
-      }
-
-    case _SchemaActionTypes2.default.SET_SCHEMA_LOADING:
-      {
-        var _schema = state[action.payload.id] || {};
-        var metadata = _schema.metadata || {};
-
-        return (0, _deepFreezeStrict2.default)(_extends({}, state, _defineProperty({}, action.payload.id, _extends({}, _schema, {
-          metadata: _extends({}, metadata, {
-            loading: action.payload.loading
-          })
-        }))));
-      }
-
-    default:
-      return state;
   }
 }
 
@@ -32530,24 +32400,17 @@ module.exports = ReduxThunk;
 
 /***/ }),
 
-/***/ 6:
-/***/ (function(module, exports) {
-
-module.exports = DeepFreezeStrict;
-
-/***/ }),
-
-/***/ 7:
-/***/ (function(module, exports) {
-
-module.exports = FormBuilder;
-
-/***/ }),
-
 /***/ 8:
 /***/ (function(module, exports) {
 
 module.exports = ReduxForm;
+
+/***/ }),
+
+/***/ 9:
+/***/ (function(module, exports) {
+
+module.exports = FormBuilderLoader;
 
 /***/ })
 

@@ -21,17 +21,3 @@ export function fetchMapStyle() {
     payload: axios.get(`${protocol}//${host}/${path}`),
   };
 }
-
-export function fetchFormSchema() {
-  const { protocol, host, pathname } = window.location;
-  return {
-    type: ActionType.FETCH_FORM_SCHEMA,
-    payload: axios.get(`${protocol}//${host}${pathname}/schema`, {
-      headers: {
-        'X-Formschema-Request': 'auto,schema,state,errors',
-      },
-      responseType: 'json',
-      responseEncoding: 'utf8',
-    }),
-  };
-}
