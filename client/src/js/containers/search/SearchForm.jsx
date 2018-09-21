@@ -1,18 +1,15 @@
 /* global window, document */
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {compose} from 'redux';
 import {connect} from 'react-redux';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import {faSearch} from '@fortawesome/fontawesome-free-solid';
 import PlacesAutocomplete from 'react-places-autocomplete';
-import {loadComponent} from 'lib/Injector';
+import {loadComponent, provideInjector} from 'lib/Injector';
 import FormBuilderLoader from 'containers/FormBuilderLoader/FormBuilderLoader';
-
 
 import {fetchLocations} from 'actions/locationActions';
 import {search} from 'actions/searchActions';
 import {changePage} from 'actions/listActions';
-import CategoryDropDown from 'components/search/CategoryDropDown';
 
 /**
  * Creates a dot-separated identifier for forms generated
@@ -22,7 +19,7 @@ import CategoryDropDown from 'components/search/CategoryDropDown';
  * @param {object} schema
  * @returns {string}
  */
-function createFormIdentifierFromProps({ identifier, schema = {} }) {
+function createFormIdentifierFromProps({identifier, schema = {}}) {
   return [
     identifier,
     schema.schema && schema.schema.name,
@@ -88,43 +85,43 @@ export class SearchForm extends Component {
       event.preventDefault();
     }
     */
-/*
-    const address = document.getElementsByName('address')[0].value;
-    const radius = SearchBar.getDropdownValue('Radius');
-    const category = SearchBar.getDropdownValue('Category');
+    /*
+        const address = document.getElementsByName('address')[0].value;
+        const radius = SearchBar.getDropdownValue('Radius');
+        const category = SearchBar.getDropdownValue('Category');
 
-    const params = {
-      address,
-      radius,
-      category,
-    };
+        const params = {
+          address,
+          radius,
+          category,
+        };
 
-    // selects dispatch and unit from this.props.
-    // const dispatch = this.props.dispatch; const unit = this.props.unit;
-    const {dispatch, unit} = this.props;
+        // selects dispatch and unit from this.props.
+        // const dispatch = this.props.dispatch; const unit = this.props.unit;
+        const {dispatch, unit} = this.props;
 
-    // dispatches search (updates search values)
-    dispatch(search({
-      address,
-      radius,
-      category,
-    }));
+        // dispatches search (updates search values)
+        dispatch(search({
+          address,
+          radius,
+          category,
+        }));
 
-    // dispatches fetch locations (gets the locations)
-    dispatch(fetchLocations({
-      ...params,
-      unit,
-    }));
+        // dispatches fetch locations (gets the locations)
+        dispatch(fetchLocations({
+          ...params,
+          unit,
+        }));
 
-    dispatch(changePage(1));
+        dispatch(changePage(1));
 
-    // changes the url for the window and adds it to the browser history(no redirect)
-    const loc = window.location;
-    const newurl = `${loc.protocol}//${loc.host}${loc.pathname}?${SearchBar.objToUrl(params)}`;
-    window.history.pushState({
-      path: newurl,
-    }, '', newurl);
-    */
+        // changes the url for the window and adds it to the browser history(no redirect)
+        const loc = window.location;
+        const newurl = `${loc.protocol}//${loc.host}${loc.pathname}?${SearchBar.objToUrl(params)}`;
+        window.history.pushState({
+          path: newurl,
+        }, '', newurl);
+        */
   }
 
   handleAddressChange(searchAddress) {
@@ -190,14 +187,16 @@ export class SearchForm extends Component {
    * @returns {XML}
    */
   render() {
-    const { identifier, formSchemaUrl } = this.props;
+    const {identifier, formSchemaUrl} = this.props;
     return (
       <div>
-        {formSchemaUrl &&<FormBuilderLoader
+        {formSchemaUrl &&
+        <FormBuilderLoader
           identifier={identifier}
           schemaUrl={formSchemaUrl}
           onSubmit={this.handleSubmit()}
-        />}
+        />
+        }
       </div>
     );
     /*
@@ -314,4 +313,8 @@ export function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(SearchForm);
+export default compose(
+  connect(mapStateToProps),
+  // for FormBuilderLoader
+  provideInjector
+)(SearchForm);
