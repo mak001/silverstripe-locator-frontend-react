@@ -19,53 +19,12 @@ import renderComponent from 'renderComponent';
 
 import Loading from 'containers/Loading';
 
-/**
- * Writes deeply nested function transformations without the rightward drift of the code.
- * [redux compose]{@link http://redux.js.org/docs/api/compose.html}
- * @returns {Function}
- */
-/*
-// TODO: uncomment when redux gets updated
-function composedMiddleware() {
-  return compose(
-    applyMiddleware(thunk, promise({
-      // new suffixes
-      promiseTypeSuffixes: ['LOADING', 'SUCCESS', 'ERROR'],
-    })),
-    // eslint-disable-next-line no-underscore-dangle
-    (typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined') ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f,
-  );
-}
-
-// creates the redux store with reducers and middleware
-const store = createStore(reducers, composedMiddleware());
-*/
-
 const finalCreateStore = compose(
   applyMiddleware(thunk, promise({
     // new suffixes
     promiseTypeSuffixes: ['LOADING', 'SUCCESS', 'ERROR'],
-  })),
-  (typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined') ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f,
+  }))
 )(createStore);
-
-// defers rendering until after content is loaded
-async function appBoot() {
-  registerComponents();
-
-  Injector.ready(() => {
-    const store = finalCreateStore(reducers);
-    Injector.reducer.setStore(store);
-
-    // renders the locator
-    renderComponent(<Loading store={store}/>, store, '.locator-loading');
-  });
-
-  // Force this to the end of the execution queue to ensure it's last.
-  //window.setTimeout(() => Injector.load(), 0);
-};
-
-//window.onload = appBoot;
 
 document.addEventListener('DOMContentLoaded', () => {
   registerComponents();

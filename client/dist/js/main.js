@@ -290,34 +290,6 @@ function fetchMapStyle() {
 "use strict";
 
 
-var appBoot = function () {
-  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            (0, _registerComponents2.default)();
-
-            _Injector2.default.ready(function () {
-              var store = finalCreateStore(reducers);
-              _Injector2.default.reducer.setStore(store);
-
-              (0, _renderComponent2.default)(_react2.default.createElement(_Loading2.default, { store: store }), store, '.locator-loading');
-            });
-
-          case 2:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-
-  return function appBoot() {
-    return _ref.apply(this, arguments);
-  };
-}();
-
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
@@ -360,15 +332,9 @@ var _Loading2 = _interopRequireDefault(_Loading);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 var finalCreateStore = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2.default, (0, _reduxPromiseMiddleware2.default)({
   promiseTypeSuffixes: ['LOADING', 'SUCCESS', 'ERROR']
-})), typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined' ? window.__REDUX_DEVTOOLS_EXTENSION__() : function (f) {
-  return f;
-})(_redux.createStore);
-
-;
+})))(_redux.createStore);
 
 document.addEventListener('DOMContentLoaded', function () {
   (0, _registerComponents2.default)();
