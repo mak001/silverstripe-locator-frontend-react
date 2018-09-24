@@ -1854,16 +1854,16 @@ var SearchForm = exports.SearchForm = function (_Component) {
   _createClass(SearchForm, [{
     key: 'handleSubmit',
     value: function handleSubmit(data, action) {
+      var _props = this.props,
+          dispatch = _props.dispatch,
+          unit = _props.unit;
+
       var params = Object.keys(data).reduce(function (object, key) {
         if (!key.startsWith('action_')) {
           object[key] = data[key];
         }
         return object;
       }, {});
-
-      var _props = this.props,
-          dispatch = _props.dispatch,
-          unit = _props.unit;
 
       dispatch((0, _searchActions.search)(params));
 

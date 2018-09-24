@@ -52,16 +52,17 @@ export class SearchForm extends Component {
    * 'Submits' form. Really just fires state change and changes the url.
    */
   handleSubmit(data, action) {
+    // selects dispatch and unit from this.props.
+    // const dispatch = this.props.dispatch; const unit = this.props.unit;
+    const {dispatch, unit} = this.props;
+
+    // removes all actions from the data
     const params = Object.keys(data).reduce((object, key) => {
       if (!key.startsWith('action_')) {
         object[key] = data[key]
       }
       return object
     }, {});
-
-    // selects dispatch and unit from this.props.
-    // const dispatch = this.props.dispatch; const unit = this.props.unit;
-    const {dispatch, unit} = this.props;
 
     // dispatches search (updates search values)
     dispatch(search(params));
