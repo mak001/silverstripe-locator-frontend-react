@@ -38,19 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
   Injector.ready(() => {
     // need to build initial state of reducers for booting earlier
     const rootReducer = combineReducers(Injector.reducer.getAll());
-    const store = createStoreWithMiddleware(rootReducer, {});
-
-    store.dispatch({
-      type: 'SET_CONFIG',
-      payload: Config.getAll(),
+    const store = createStoreWithMiddleware(rootReducer, {
+      config: Config.getAll(),
     });
 
     Injector.reducer.setStore(store);
+    window.ss.store = store;
 
-    window.setTimeout(() =>
-        // renders the locator
-        renderComponent(<Loading store={store}/>, store, '.locator-loading'),
-      0
-    );
+    // renders the locator
+    window.setTimeout(() => {
+      renderComponent(<Loading store={store}/>, store, '.locator-loading');
+    }, 0);
   });
 });

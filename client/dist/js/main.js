@@ -295,7 +295,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = applyDevtools;
 
-var _redux = __webpack_require__(4);
+var _redux = __webpack_require__(3);
 
 function applyDevtools(middleware) {
   var composeExtension = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
@@ -323,7 +323,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _redux = __webpack_require__(4);
+var _redux = __webpack_require__(3);
 
 var _reduxThunk = __webpack_require__(6);
 
@@ -382,17 +382,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   _Injector2.default.ready(function () {
     var rootReducer = (0, _redux.combineReducers)(_Injector2.default.reducer.getAll());
-    var store = createStoreWithMiddleware(rootReducer, {});
-
-    store.dispatch({
-      type: 'SET_CONFIG',
-      payload: _Config2.default.getAll()
+    var store = createStoreWithMiddleware(rootReducer, {
+      config: _Config2.default.getAll()
     });
 
     _Injector2.default.reducer.setStore(store);
+    window.ss.store = store;
 
     window.setTimeout(function () {
-      return (0, _renderComponent2.default)(_react2.default.createElement(_Loading2.default, { store: store }), store, '.locator-loading');
+      (0, _renderComponent2.default)(_react2.default.createElement(_Loading2.default, { store: store }), store, '.locator-loading');
     }, 0);
   });
 });
@@ -1790,7 +1788,7 @@ var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _redux = __webpack_require__(4);
+var _redux = __webpack_require__(3);
 
 var _reactRedux = __webpack_require__(2);
 
@@ -2014,7 +2012,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _redux = __webpack_require__(4);
+var _redux = __webpack_require__(3);
 
 var _reduxForm = __webpack_require__(8);
 
@@ -2402,7 +2400,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(3);
+var _reactDom = __webpack_require__(4);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -19991,7 +19989,7 @@ var _react = __webpack_require__(0)
 
 var _react2 = _interopRequireDefault(_react)
 
-var _reactDom = __webpack_require__(3)
+var _reactDom = __webpack_require__(4)
 
 var _reactDom2 = _interopRequireDefault(_reactDom)
 
@@ -21275,7 +21273,7 @@ var _react = __webpack_require__(0)
 
 var _react2 = _interopRequireDefault(_react)
 
-var _reactDom = __webpack_require__(3)
+var _reactDom = __webpack_require__(4)
 
 var _reactDom2 = _interopRequireDefault(_reactDom)
 
@@ -23229,7 +23227,7 @@ var _react = __webpack_require__(0)
 
 var _react2 = _interopRequireDefault(_react)
 
-var _reactDom = __webpack_require__(3)
+var _reactDom = __webpack_require__(4)
 
 var _reactDom2 = _interopRequireDefault(_reactDom)
 
@@ -27850,14 +27848,14 @@ module.exports = ReactRedux;
 /***/ 3:
 /***/ (function(module, exports) {
 
-module.exports = ReactDom;
+module.exports = Redux;
 
 /***/ }),
 
 /***/ 4:
 /***/ (function(module, exports) {
 
-module.exports = Redux;
+module.exports = ReactDom;
 
 /***/ }),
 
