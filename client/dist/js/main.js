@@ -284,6 +284,35 @@ function fetchMapStyle() {
 
 /***/ }),
 
+/***/ "./client/src/js/boot/applyDevtools.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = applyDevtools;
+
+var _redux = __webpack_require__(4);
+
+function applyDevtools(middleware) {
+  var composeExtension = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+
+  var devTools = window.__REDUX_DEVTOOLS_EXTENSION__ || window.devToolsExtension;
+
+  if (typeof composeExtension === 'function') {
+    return composeExtension(middleware);
+  }
+  if (typeof devTools === 'function') {
+    return (0, _redux.compose)(middleware, devTools());
+  }
+  return middleware;
+}
+
+/***/ }),
+
 /***/ "./client/src/js/boot/index.jsx":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -294,15 +323,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(3);
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
 var _redux = __webpack_require__(4);
 
-var _reactRedux = __webpack_require__(2);
-
-var _reduxThunk = __webpack_require__(5);
+var _reduxThunk = __webpack_require__(6);
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
@@ -310,9 +333,17 @@ var _reduxPromiseMiddleware = __webpack_require__("./node_modules/redux-promise-
 
 var _reduxPromiseMiddleware2 = _interopRequireDefault(_reduxPromiseMiddleware);
 
+var _Config = __webpack_require__(5);
+
+var _Config2 = _interopRequireDefault(_Config);
+
 var _Injector = __webpack_require__(1);
 
 var _Injector2 = _interopRequireDefault(_Injector);
+
+var _applyDevtools = __webpack_require__("./client/src/js/boot/applyDevtools.js");
+
+var _applyDevtools2 = _interopRequireDefault(_applyDevtools);
 
 var _registerComponents = __webpack_require__("./client/src/js/boot/registerComponents.jsx");
 
@@ -332,17 +363,36 @@ var _Loading2 = _interopRequireDefault(_Loading);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var finalCreateStore = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2.default, (0, _reduxPromiseMiddleware2.default)({
-  promiseTypeSuffixes: ['LOADING', 'SUCCESS', 'ERROR']
-})))(_redux.createStore);
-
 document.addEventListener('DOMContentLoaded', function () {
   (0, _registerComponents2.default)();
   (0, _reducers2.default)();
 
+  var middleware = [_reduxThunk2.default, (0, _reduxPromiseMiddleware2.default)({
+    promiseTypeSuffixes: ['LOADING', 'SUCCESS', 'ERROR']
+  })];
+
+  var debugging = _Config2.default.get('debugging');
+  var runMiddleware = _redux.applyMiddleware.apply(undefined, middleware);
+
+  if (debugging) {
+    runMiddleware = (0, _applyDevtools2.default)(runMiddleware);
+  }
+
+  var createStoreWithMiddleware = runMiddleware(_redux.createStore);
+
   _Injector2.default.ready(function () {
+    var rootReducer = (0, _redux.combineReducers)(_Injector2.default.reducer.getAll());
+    var store = createStoreWithMiddleware(rootReducer, {});
+
+    store.dispatch({
+      type: 'SET_CONFIG',
+      payload: _Config2.default.getAll()
+    });
+
+    _Injector2.default.reducer.setStore(store);
+
     window.setTimeout(function () {
-      return (0, _renderComponent2.default)(_react2.default.createElement(_Loading2.default, { store: window.ss.store }), window.ss.store, '.locator-loading');
+      return (0, _renderComponent2.default)(_react2.default.createElement(_Loading2.default, { store: store }), store, '.locator-loading');
     }, 0);
   });
 });
@@ -1750,7 +1800,7 @@ var _reactPlacesAutocomplete2 = _interopRequireDefault(_reactPlacesAutocomplete)
 
 var _Injector = __webpack_require__(1);
 
-var _FormBuilderLoader = __webpack_require__(6);
+var _FormBuilderLoader = __webpack_require__(7);
 
 var _FormBuilderLoader2 = _interopRequireDefault(_FormBuilderLoader);
 
@@ -1966,7 +2016,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(4);
 
-var _reduxForm = __webpack_require__(7);
+var _reduxForm = __webpack_require__(8);
 
 var _Injector = __webpack_require__(1);
 
@@ -27814,18 +27864,25 @@ module.exports = Redux;
 /***/ 5:
 /***/ (function(module, exports) {
 
-module.exports = ReduxThunk;
+module.exports = Config;
 
 /***/ }),
 
 /***/ 6:
 /***/ (function(module, exports) {
 
-module.exports = FormBuilderLoader;
+module.exports = ReduxThunk;
 
 /***/ }),
 
 /***/ 7:
+/***/ (function(module, exports) {
+
+module.exports = FormBuilderLoader;
+
+/***/ }),
+
+/***/ 8:
 /***/ (function(module, exports) {
 
 module.exports = ReduxForm;
