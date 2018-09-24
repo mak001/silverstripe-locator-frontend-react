@@ -35,13 +35,6 @@ export class SearchForm extends Component {
     return vars.replace(/([&\s]+$)/g, '').replace(/(\s)/g, '+');
   }
 
-  static getDropdownValue(name) {
-    if (document.getElementsByName(name)[0] !== undefined) {
-      return document.getElementsByName(name)[0].value;
-    }
-    return '';
-  }
-
   /**
    * Used to create the SearchBar.
    * needed to allow use of this keyword in handler.
@@ -59,16 +52,12 @@ export class SearchForm extends Component {
    * 'Submits' form. Really just fires state change and changes the url.
    */
   handleSubmit(data, action) {
-    console.log(data);
-
     const params = Object.keys(data).reduce((object, key) => {
       if (!key.startsWith('action_')) {
         object[key] = data[key]
       }
       return object
     }, {});
-
-    console.log(params);
 
     // selects dispatch and unit from this.props.
     // const dispatch = this.props.dispatch; const unit = this.props.unit;
@@ -95,22 +84,6 @@ export class SearchForm extends Component {
 
   handleAddressChange(searchAddress) {
     this.searchAddress = searchAddress;
-  }
-
-  getRadiiSource() {
-    const {radii, unit} = this.props;
-    return radii.map(radius => ({
-      value: radius,
-      title: `${radius} ${unit}`,
-    }));
-  }
-
-  getCategorySource() {
-    const {categories} = this.props;
-    return categories.map(category => ({
-      value: category.ID,
-      title: category.Name,
-    }));
   }
 
   /**
@@ -171,64 +144,6 @@ export class SearchForm extends Component {
         }
       </div>
     );
-    /*
-    const {
-      address, category, autocomplete
-    } = this.props;
-
-    const categories = this.getCategorySource();
-    const showCategories = categories.length !== 0;
-
-    const radii = this.getRadiiSource();
-    let {radius} = this.props;
-    if (typeof radius === 'string') {
-      radius = Number(radius);
-    }
-
-    const SingleSelectField = loadComponent('SingleSelectField');
-
-    return (
-      <form onSubmit={this.handleSubmit} className="search">
-        <div className="fieldset">
-          <div className="address-input form-group">
-            <label htmlFor="address"
-                   className="sr-only">{ss.i18n._t('Locator.ADDRESS_FIELD', 'Address or zip code')}</label>
-            {this.getAddressInput()}
-          </div>
-          <SingleSelectField
-            name={ss.i18n._t('Locator.RADIUS_FIELD', 'Radius')}
-            extraClass="radius-dropdown"
-            value={radius}
-            source={radii}
-            data={{
-              hasEmptyDefault: true,
-              emptyString: ss.i18n._t('Locator.RADIUS_FIELD', 'Radius'),
-            }}
-          />
-          {showCategories &&
-            <SingleSelectField
-              name={ss.i18n._t('Locator.CATEGORY_FIELD', 'Category')}
-              extraClass="category-dropdown"
-              defaultValue={category}
-              source={categories}
-              data={{
-                hasEmptyDefault: true,
-                emptyString: ss.i18n._t('Locator.CATEGORY_FIELD', 'Category'),
-              }}
-            />
-          }
-          <div className="form-group input-group-btn">
-            <button
-              className="btn btn-secondary"
-              type="button"
-              type="submit">
-              <FontAwesomeIcon icon={faSearch}/>
-              <span className="sr-only sr-only-focusable">{ss.i18n._t('Locator.SEARCH_BUTTON', 'Search')}</span>
-            </button>
-          </div>
-        </div>
-      </form>
-    );*/
   }
 }
 

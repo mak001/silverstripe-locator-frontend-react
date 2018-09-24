@@ -1838,14 +1838,6 @@ var SearchForm = exports.SearchForm = function (_Component) {
 
       return vars.replace(/([&\s]+$)/g, '').replace(/(\s)/g, '+');
     }
-  }, {
-    key: 'getDropdownValue',
-    value: function getDropdownValue(name) {
-      if (document.getElementsByName(name)[0] !== undefined) {
-        return document.getElementsByName(name)[0].value;
-      }
-      return '';
-    }
   }]);
 
   function SearchForm(props) {
@@ -1862,16 +1854,12 @@ var SearchForm = exports.SearchForm = function (_Component) {
   _createClass(SearchForm, [{
     key: 'handleSubmit',
     value: function handleSubmit(data, action) {
-      console.log(data);
-
       var params = Object.keys(data).reduce(function (object, key) {
         if (!key.startsWith('action_')) {
           object[key] = data[key];
         }
         return object;
       }, {});
-
-      console.log(params);
 
       var _props = this.props,
           dispatch = _props.dispatch,
@@ -1897,39 +1885,13 @@ var SearchForm = exports.SearchForm = function (_Component) {
       this.searchAddress = searchAddress;
     }
   }, {
-    key: 'getRadiiSource',
-    value: function getRadiiSource() {
-      var _props2 = this.props,
-          radii = _props2.radii,
-          unit = _props2.unit;
-
-      return radii.map(function (radius) {
-        return {
-          value: radius,
-          title: radius + ' ' + unit
-        };
-      });
-    }
-  }, {
-    key: 'getCategorySource',
-    value: function getCategorySource() {
-      var categories = this.props.categories;
-
-      return categories.map(function (category) {
-        return {
-          value: category.ID,
-          title: category.Name
-        };
-      });
-    }
-  }, {
     key: 'getAddressInput',
     value: function getAddressInput() {
-      var _props3 = this.props,
-          address = _props3.address,
-          radii = _props3.radii,
-          center = _props3.center,
-          autocomplete = _props3.autocomplete;
+      var _props2 = this.props,
+          address = _props2.address,
+          radii = _props2.radii,
+          center = _props2.center,
+          autocomplete = _props2.autocomplete;
 
       if (autocomplete === true) {
         var inputProps = {
@@ -1967,9 +1929,9 @@ var SearchForm = exports.SearchForm = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props4 = this.props,
-          identifier = _props4.identifier,
-          formSchemaUrl = _props4.formSchemaUrl;
+      var _props3 = this.props,
+          identifier = _props3.identifier,
+          formSchemaUrl = _props3.formSchemaUrl;
 
       return _react2.default.createElement(
         'div',
