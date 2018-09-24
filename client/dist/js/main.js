@@ -1776,6 +1776,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.SearchForm = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.mapStateToProps = mapStateToProps;
@@ -1818,16 +1820,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function createFormIdentifierFromProps(_ref) {
-  var identifier = _ref.identifier,
-      _ref$schema = _ref.schema,
-      schema = _ref$schema === undefined ? {} : _ref$schema;
-
-  return [identifier, schema.schema && schema.schema.name].filter(function (id) {
-    return id;
-  }).join('.');
-}
-
 var SearchForm = exports.SearchForm = function (_Component) {
   _inherits(SearchForm, _Component);
 
@@ -1863,14 +1855,42 @@ var SearchForm = exports.SearchForm = function (_Component) {
 
     _this.searchAddress = props.address;
 
-    _this.handleSubmit = _this.handleSubmit.bind(_this);
     _this.handleAddressChange = _this.handleAddressChange.bind(_this);
     return _this;
   }
 
   _createClass(SearchForm, [{
     key: 'handleSubmit',
-    value: function handleSubmit(event) {}
+    value: function handleSubmit(data, action) {
+      console.log(data);
+
+      var params = Object.keys(data).reduce(function (object, key) {
+        if (!key.startsWith('action_')) {
+          object[key] = data[key];
+        }
+        return object;
+      }, {});
+
+      console.log(params);
+
+      var _props = this.props,
+          dispatch = _props.dispatch,
+          unit = _props.unit;
+
+      dispatch((0, _searchActions.search)(params));
+
+      dispatch((0, _locationActions.fetchLocations)(_extends({}, params, {
+        unit: unit
+      })));
+
+      dispatch((0, _listActions.changePage)(1));
+
+      var loc = window.location;
+      var newurl = loc.protocol + '//' + loc.host + loc.pathname + '?' + SearchForm.objToUrl(params);
+      window.history.pushState({
+        path: newurl
+      }, '', newurl);
+    }
   }, {
     key: 'handleAddressChange',
     value: function handleAddressChange(searchAddress) {
@@ -1879,9 +1899,9 @@ var SearchForm = exports.SearchForm = function (_Component) {
   }, {
     key: 'getRadiiSource',
     value: function getRadiiSource() {
-      var _props = this.props,
-          radii = _props.radii,
-          unit = _props.unit;
+      var _props2 = this.props,
+          radii = _props2.radii,
+          unit = _props2.unit;
 
       return radii.map(function (radius) {
         return {
@@ -1905,11 +1925,11 @@ var SearchForm = exports.SearchForm = function (_Component) {
   }, {
     key: 'getAddressInput',
     value: function getAddressInput() {
-      var _props2 = this.props,
-          address = _props2.address,
-          radii = _props2.radii,
-          center = _props2.center,
-          autocomplete = _props2.autocomplete;
+      var _props3 = this.props,
+          address = _props3.address,
+          radii = _props3.radii,
+          center = _props3.center,
+          autocomplete = _props3.autocomplete;
 
       if (autocomplete === true) {
         var inputProps = {
@@ -1945,9 +1965,11 @@ var SearchForm = exports.SearchForm = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _props3 = this.props,
-          identifier = _props3.identifier,
-          formSchemaUrl = _props3.formSchemaUrl;
+      var _this2 = this;
+
+      var _props4 = this.props,
+          identifier = _props4.identifier,
+          formSchemaUrl = _props4.formSchemaUrl;
 
       return _react2.default.createElement(
         'div',
@@ -1955,7 +1977,10 @@ var SearchForm = exports.SearchForm = function (_Component) {
         formSchemaUrl && _react2.default.createElement(_FormBuilderLoader2.default, {
           identifier: identifier,
           schemaUrl: formSchemaUrl,
-          onSubmit: this.handleSubmit()
+          onSubmit: function onSubmit(data, action) {
+            _this2.handleSubmit(data, action);
+            return Promise.resolve();
+          }
         })
       );
     }

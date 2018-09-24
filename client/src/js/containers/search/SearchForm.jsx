@@ -11,21 +11,6 @@ import {fetchLocations} from 'actions/locationActions';
 import {search} from 'actions/searchActions';
 import {changePage} from 'actions/listActions';
 
-/**
- * Creates a dot-separated identifier for forms generated
- * with schemas (e.g. FormBuilderLoader)
- *
- * @param {string} identifier
- * @param {object} schema
- * @returns {string}
- */
-function createFormIdentifierFromProps({identifier, schema = {}}) {
-  return [
-    identifier,
-    schema.schema && schema.schema.name,
-  ].filter(id => id).join('.');
-}
-
 export class SearchForm extends Component {
   /**
    * Turns a javascript object into url params.
@@ -67,61 +52,45 @@ export class SearchForm extends Component {
 
     this.searchAddress = props.address;
 
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.handleAddressChange = this.handleAddressChange.bind(this);
   }
-
 
   /**
    * 'Submits' form. Really just fires state change and changes the url.
    */
-  handleSubmit(event) {
-    /*
-    if (typeof event === 'string' || event instanceof String) {
-      this.searchAddress = event;
-      document.getElementsByName('address')[0].value = event;
-    } else {
-      // stops the submit from reloading
-      event.preventDefault();
-    }
-    */
-    /*
-        const address = document.getElementsByName('address')[0].value;
-        const radius = SearchBar.getDropdownValue('Radius');
-        const category = SearchBar.getDropdownValue('Category');
+  handleSubmit(data, action) {
+    console.log(data);
 
-        const params = {
-          address,
-          radius,
-          category,
-        };
+    const params = Object.keys(data).reduce((object, key) => {
+      if (!key.startsWith('action_')) {
+        object[key] = data[key]
+      }
+      return object
+    }, {});
 
-        // selects dispatch and unit from this.props.
-        // const dispatch = this.props.dispatch; const unit = this.props.unit;
-        const {dispatch, unit} = this.props;
+    console.log(params);
 
-        // dispatches search (updates search values)
-        dispatch(search({
-          address,
-          radius,
-          category,
-        }));
+    // selects dispatch and unit from this.props.
+    // const dispatch = this.props.dispatch; const unit = this.props.unit;
+    const {dispatch, unit} = this.props;
 
-        // dispatches fetch locations (gets the locations)
-        dispatch(fetchLocations({
-          ...params,
-          unit,
-        }));
+    // dispatches search (updates search values)
+    dispatch(search(params));
 
-        dispatch(changePage(1));
+    // dispatches fetch locations (gets the locations)
+    dispatch(fetchLocations({
+      ...params,
+      unit,
+    }));
 
-        // changes the url for the window and adds it to the browser history(no redirect)
-        const loc = window.location;
-        const newurl = `${loc.protocol}//${loc.host}${loc.pathname}?${SearchBar.objToUrl(params)}`;
-        window.history.pushState({
-          path: newurl,
-        }, '', newurl);
-        */
+    dispatch(changePage(1));
+
+    // changes the url for the window and adds it to the browser history(no redirect)
+    const loc = window.location;
+    const newurl = `${loc.protocol}//${loc.host}${loc.pathname}?${SearchForm.objToUrl(params)}`;
+    window.history.pushState({
+      path: newurl,
+    }, '', newurl);
   }
 
   handleAddressChange(searchAddress) {
@@ -194,7 +163,10 @@ export class SearchForm extends Component {
         <FormBuilderLoader
           identifier={identifier}
           schemaUrl={formSchemaUrl}
-          onSubmit={this.handleSubmit()}
+          onSubmit={(data, action) => {
+            this.handleSubmit(data, action);
+            return Promise.resolve();
+          }}
         />
         }
       </div>
