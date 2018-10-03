@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import PlacesAutocomplete from 'react-places-autocomplete';
+import { diff } from 'deep-diff';
 import {loadComponent, provideInjector} from 'lib/Injector';
 import FormBuilderLoader from 'containers/FormBuilderLoader/FormBuilderLoader';
 
@@ -44,8 +45,13 @@ export class SearchForm extends Component {
     super(props);
 
     this.searchAddress = props.address;
-
     this.handleAddressChange = this.handleAddressChange.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps) {
+    const difference = diff(this.props, nextProps);
+
+    return difference.length !== 1 && difference.forEach((change) => change.path[0] !== 'formSchemaUrl');
   }
 
   /**
@@ -65,7 +71,7 @@ export class SearchForm extends Component {
     }, {});
 
     // dispatches search (updates search values)
-    dispatch(search(params));
+    // dispatch(search(params));
 
     // dispatches fetch locations (gets the locations)
     dispatch(fetchLocations({
@@ -194,16 +200,6 @@ export function getSchemaURL(config) {
  */
 export function mapStateToProps(state) {
   return {
-    // the defaults - for when it gets loaded from the url
-    address: state.locator.search.address,
-    radius: state.locator.search.radius,
-    category: state.locator.search.category,
-
-    // the options
-    radii: state.locator.settings.radii,
-    categories: state.locator.settings.categories,
-
-    // other
     unit: state.locator.settings.unit,
     autocomplete: state.locator.settings.autocomplete,
     center: state.locator.settings.defaultCenter,
