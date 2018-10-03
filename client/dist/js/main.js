@@ -1780,6 +1780,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+exports.getSchemaURL = getSchemaURL;
 exports.mapStateToProps = mapStateToProps;
 
 var _react = __webpack_require__(0);
@@ -1968,6 +1969,14 @@ SearchForm.propTypes = {
   dispatch: _propTypes2.default.func.isRequired
 };
 
+function getSchemaURL(config) {
+  var absoluteBaseUrl = config.absoluteBaseUrl,
+      url = config.url;
+  var search = window.location.search;
+
+  return '' + absoluteBaseUrl + url + '/schema' + search;
+}
+
 function mapStateToProps(state) {
   return {
     address: state.locator.search.address,
@@ -1981,7 +1990,7 @@ function mapStateToProps(state) {
     autocomplete: state.locator.settings.autocomplete,
     center: state.locator.settings.defaultCenter,
     identifier: 'Locator.SearchForm',
-    formSchemaUrl: state.config.absoluteBaseUrl + state.config.url + '/schema'
+    formSchemaUrl: getSchemaURL(state.config)
   };
 }
 

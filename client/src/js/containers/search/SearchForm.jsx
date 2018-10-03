@@ -176,6 +176,17 @@ SearchForm.propTypes = {
 };
 
 /**
+ * Constructs the schemaurl for the form
+ * @param config
+ * @returns {string}
+ */
+export function getSchemaURL(config) {
+  const {absoluteBaseUrl, url} = config;
+  const {search} = window.location;
+  return `${absoluteBaseUrl}${url}/schema${search}`;
+}
+
+/**
  * Takes variables/functions from the state and assigns them to variables/functions in the components props.
  *
  * @param state
@@ -197,7 +208,7 @@ export function mapStateToProps(state) {
     autocomplete: state.locator.settings.autocomplete,
     center: state.locator.settings.defaultCenter,
     identifier: 'Locator.SearchForm',
-    formSchemaUrl: state.config.absoluteBaseUrl + state.config.url + '/schema',
+    formSchemaUrl: getSchemaURL(state.config),
   };
 }
 
