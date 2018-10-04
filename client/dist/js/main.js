@@ -84,7 +84,6 @@ var ActionTypes = {
   FETCH_LOCATIONS: 'FETCH_LOCATIONS',
 
   FETCH_MAP_STYLE: 'FETCH_MAP_STYLE',
-  FETCH_FORM_SCHEMA: 'FETCH_FORM_SCHEMA',
 
   SEARCH: 'SEARCH',
 
@@ -101,10 +100,6 @@ ActionTypes.FETCH_LOCATIONS_ERROR = ActionTypes.FETCH_LOCATIONS + '_ERROR';
 ActionTypes.FETCH_MAP_STYLE_LOADING = ActionTypes.FETCH_MAP_STYLE + '_LOADING';
 ActionTypes.FETCH_MAP_STYLE_SUCCESS = ActionTypes.FETCH_MAP_STYLE + '_SUCCESS';
 ActionTypes.FETCH_MAP_STYLE_ERROR = ActionTypes.FETCH_MAP_STYLE + '_ERROR';
-
-ActionTypes.FETCH_FORM_SCHEMA_LOADING = ActionTypes.FETCH_FORM_SCHEMA + '_LOADING';
-ActionTypes.FETCH_FORM_SCHEMA_SUCCESS = ActionTypes.FETCH_FORM_SCHEMA + '_SUCCESS';
-ActionTypes.FETCH_FORM_SCHEMA_ERROR = ActionTypes.FETCH_FORM_SCHEMA + '_ERROR';
 
 exports.default = ActionTypes;
 
@@ -2003,8 +1998,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _redux = __webpack_require__(3);
-
-var _reduxForm = __webpack_require__(8);
 
 var _Injector = __webpack_require__(1);
 
@@ -27888,13 +27881,6 @@ module.exports = ReduxThunk;
 /***/ (function(module, exports) {
 
 module.exports = FormBuilderLoader;
-
-/***/ }),
-
-/***/ 8:
-/***/ (function(module, exports) {
-
-module.exports = ReduxForm;
 
 /***/ })
 

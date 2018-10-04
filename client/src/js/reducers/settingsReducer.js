@@ -1,4 +1,5 @@
-/* global dynamic_locator, ss */
+/* global dynamic_locator, ss, window */
+// eslint-disable-next-line import/no-unresolved, import/extensions
 import Config from 'lib/Config';
 
 import ActionType from 'actions/ActionTypes';
@@ -36,8 +37,8 @@ defaultState.unitText = ss.i18n._t(`Locator.UNIT.${defaultState.unit}`, 'mi');
  * @returns {string}
  */
 export function getSchemaURL() {
-  const {absoluteBaseUrl, url} = Config.getAll();
-  const {search} = window.location;
+  const { absoluteBaseUrl, url } = Config.getAll();
+  const { search } = window.location;
   return `${absoluteBaseUrl}${url}/schema${search}`;
 }
 
@@ -64,7 +65,7 @@ function settings() {
 
 function didSettingsLoad(state = defaultState) {
   const { loadedMapStyle } = state;
-  return loadedMapStyle === true ;
+  return loadedMapStyle === true;
 }
 
 /**

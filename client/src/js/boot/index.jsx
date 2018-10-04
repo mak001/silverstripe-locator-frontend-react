@@ -1,11 +1,13 @@
 /* global window, document */
 import React from 'react';
 
-import {applyMiddleware, combineReducers, createStore} from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
 
 import thunk from 'redux-thunk';
 import promise from 'redux-promise-middleware';
+// eslint-disable-next-line import/no-unresolved, import/extensions
 import Config from 'lib/Config';
+// eslint-disable-next-line import/no-unresolved, import/extensions
 import Injector from 'lib/Injector';
 
 import applyDevtools from 'boot/applyDevtools';
@@ -14,7 +16,7 @@ import registerReducers from 'reducers';
 import renderComponent from 'renderComponent';
 
 import Loading from 'containers/Loading';
-import {createdStore} from 'actions/settingsActions';
+import { createdStore } from 'actions/settingsActions';
 
 document.addEventListener('DOMContentLoaded', () => {
   registerComponents();

@@ -1,5 +1,5 @@
-import {combineReducers} from 'redux';
-import {reducer as ReduxFormReducer} from 'redux-form';
+import { combineReducers } from 'redux';
+// eslint-disable-next-line import/no-unresolved, import/extensions
 import Injector from 'lib/Injector';
 
 import search from 'reducers/searchReducer';
@@ -10,13 +10,12 @@ import list from 'reducers/listReducer';
 
 const registerReducers = () => {
   Injector.reducer.register('locator', combineReducers({
-      search,
-      map,
-      settings,
-      locations,
-      list,
-    })
-  );
+    search,
+    map,
+    settings,
+    locations,
+    list,
+  }));
 };
 
 export default registerReducers;
