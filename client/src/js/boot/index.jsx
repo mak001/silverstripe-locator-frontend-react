@@ -14,6 +14,7 @@ import registerReducers from 'reducers';
 import renderComponent from 'renderComponent';
 
 import Loading from 'containers/Loading';
+import {createdStore} from 'actions/settingsActions';
 
 document.addEventListener('DOMContentLoaded', () => {
   registerComponents();
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     Injector.reducer.setStore(store);
+    store.dispatch(createdStore());
     window.ss.store = store;
 
     // renders the locator

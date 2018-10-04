@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import PlacesAutocomplete from 'react-places-autocomplete';
-import { diff } from 'deep-diff';
 import {loadComponent, provideInjector} from 'lib/Injector';
 import FormBuilderLoader from 'containers/FormBuilderLoader/FormBuilderLoader';
 
@@ -46,12 +45,6 @@ export class SearchForm extends Component {
 
     this.searchAddress = props.address;
     this.handleAddressChange = this.handleAddressChange.bind(this);
-  }
-
-  shouldComponentUpdate(nextProps) {
-    const difference = diff(this.props, nextProps);
-
-    return difference.length !== 1 && difference.forEach((change) => change.path[0] !== 'formSchemaUrl');
   }
 
   /**
@@ -182,17 +175,6 @@ SearchForm.propTypes = {
 };
 
 /**
- * Constructs the schemaurl for the form
- * @param config
- * @returns {string}
- */
-export function getSchemaURL(config) {
-  const {absoluteBaseUrl, url} = config;
-  const {search} = window.location;
-  return `${absoluteBaseUrl}${url}/schema${search}`;
-}
-
-/**
  * Takes variables/functions from the state and assigns them to variables/functions in the components props.
  *
  * @param state
@@ -204,7 +186,7 @@ export function mapStateToProps(state) {
     autocomplete: state.locator.settings.autocomplete,
     center: state.locator.settings.defaultCenter,
     identifier: 'Locator.SearchForm',
-    formSchemaUrl: getSchemaURL(state.config),
+    formSchemaUrl: state.locator.settings.formSchemaUrl,
   };
 }
 
